@@ -20,6 +20,8 @@ final class GameScene: SKScene {
     fileprivate var hero : SKShapeNode?
     fileprivate var bunny: SKSpriteNode!
     private var cameraNode: SKCameraNode!
+    private var level = 1
+    private var currentTileMap: SKTileMapNode?
 
         
     class func newGameScene() -> GameScene {
@@ -61,9 +63,6 @@ final class GameScene: SKScene {
                             tileNode.physicsBody?.collisionBitMask = PhysicsCategory.Bunny
                             tileNode.physicsBody?.categoryBitMask = PhysicsCategory.Ground
                             
-                            // tileNode.yScale = tileMap.yScale
-                            // tileNode.xScale = tileMap.xScale
-                            
                             
                             tileMap.addChild(tileNode)
                         }
@@ -74,6 +73,18 @@ final class GameScene: SKScene {
         }
     }
 
+    func loadLevel() {
+        if let currentTileMap {
+            currentTileMap.position.y = 5000
+            currentTileMap.removeAllChildren()
+        }
+        let tileMap = childNode(withName: "level" + String(level)) as! SKTileMapNode
+        print(tileMap)
+        currentTileMap = tileMap
+        tileMapPhysics(tileMap: tileMap)
+        
+        tileMap.position.y = 0
+    }
     
     func setUpScene() {
         // Set up camera
@@ -83,8 +94,7 @@ final class GameScene: SKScene {
         
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         
-        
-        tileMapPhysics(tileMap: childNode(withName: "ground") as! SKTileMapNode)
+        loadLevel()
         
         let sunSize = 350.0
         let sunPadding = 50.0
@@ -163,6 +173,13 @@ final class GameScene: SKScene {
         // Define the initial position of the bunny
         bunny.position = CGPoint(x: frame.minX + 100, y: frame.midY) // Adjust position as needed
         bunny.physicsBody?.velocity = CGVector(dx: 0, dy: 0) // Reset any movement
+        
+        level += 1
+        
+        if level > 2 {
+            level = 1
+        }
+        loadLevel()
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -171,7 +188,7 @@ final class GameScene: SKScene {
         
         if let camera = self.camera {
             let leftBoundary = camera.position.x - (size.width / 2)
-            let rightBoundary = camera.position.x + (size.width / 2)
+            let rightBoundary = frame.maxX - 200
             let bottomBoundary = camera.position.y - (size.height / 2)
             let topBoundary = camera.position.y + (size.height / 2)
             
