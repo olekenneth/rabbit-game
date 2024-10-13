@@ -176,7 +176,7 @@ final class GameScene: SKScene {
         
         level += 1
         
-        if level > 2 {
+        if level > 3 {
             level = 1
         }
         loadLevel()
