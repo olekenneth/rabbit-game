@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "bunny.png",
+      "filename" : "bunny-nobg.png",
       "idiom" : "universal",
       "scale" : "1x"
     },

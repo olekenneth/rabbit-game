@@ -20,7 +20,6 @@ final class GameScene: SKScene {
     fileprivate var hero : SKShapeNode?
     fileprivate var bunny: SKSpriteNode!
     private var cameraNode: SKCameraNode!
-    var currentGroundEnd: CGFloat = 0
 
         
     class func newGameScene() -> GameScene {
@@ -35,99 +34,66 @@ final class GameScene: SKScene {
         
         return scene
     }
-    
-    func createCustomGroundSegment(at startX: CGFloat) -> SKNode {
-        let segmentWidth = CGFloat.random(in: 150...300)
-        let dirtHeight: CGFloat = 30
-        let grassHeight: CGFloat = 10
-        let groundPositionY = frame.minY + dirtHeight + grassHeight
 
-        let groundParentNode = SKNode()
-
-        // Create dirt part of the ground
-        let dirtNode = SKSpriteNode(color: .brown, size: CGSize(width: segmentWidth, height: dirtHeight))
-        dirtNode.position = CGPoint(x: segmentWidth / 2, y: dirtHeight / 2)
-
-        // Create grass part of the ground
-        let grassNode = SKSpriteNode(color: .green, size: CGSize(width: segmentWidth, height: grassHeight))
-        grassNode.position = CGPoint(x: segmentWidth / 2, y: dirtHeight + grassHeight / 2)
-
-        // Add dirt and grass nodes as children to the parent node
-        groundParentNode.addChild(dirtNode)
-        groundParentNode.addChild(grassNode)
-
-        // Set the position of the parent node
-        groundParentNode.position = CGPoint(x: startX + segmentWidth / 2, y: groundPositionY)
-
-        // Create physics body for the parent node
-        groundParentNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: segmentWidth, height: dirtHeight))
-        groundParentNode.physicsBody?.isDynamic = false
-        groundParentNode.physicsBody?.categoryBitMask = PhysicsCategory.Ground
-        groundParentNode.physicsBody?.contactTestBitMask = PhysicsCategory.Bunny
-        groundParentNode.physicsBody?.collisionBitMask = PhysicsCategory.Bunny
-
-        currentGroundEnd = startX + segmentWidth
-        return groundParentNode
-    }
-
-    func createInitialCustomGround() {
-        let initialGroundSegments = Int(ceil(frame.width / 300)) + 1
-        for _ in 0..<initialGroundSegments {
-            let groundSegment = createCustomGroundSegment(at: currentGroundEnd)
-            addChild(groundSegment)
+    func tileMapPhysics(tileMap: SKTileMapNode)
+    {
+        let tileSize = CGSize(width: tileMap.tileSize.width, height: tileMap.tileSize.height)
+        for col in 0..<tileMap.numberOfColumns {
+            for row in 0..<tileMap.numberOfRows {
+                if let tileDefinition = tileMap.tileDefinition(atColumn: col, row: row)
+                {
+                    guard let textureName = tileDefinition.name else { break }
+                    if textureName.localizedCaseInsensitiveContains("center") {
+                        if let tileTexture = tileDefinition.textures.first {
+                            let centerOfTile = tileMap.centerOfTile(atColumn: col, row: row)
+                            
+                            let tileNode = SKNode()
+                            
+                            tileNode.position = centerOfTile
+                            tileNode.physicsBody = SKPhysicsBody(texture: tileTexture,
+                                                                 size: tileSize)
+                            tileNode.physicsBody?.linearDamping = 60.0
+                            tileNode.physicsBody?.friction = 0.8
+                            tileNode.physicsBody?.affectedByGravity = false
+                            tileNode.physicsBody?.allowsRotation = false
+                            tileNode.physicsBody?.restitution = 0.0
+                            tileNode.physicsBody?.isDynamic = false
+                            tileNode.physicsBody?.collisionBitMask = PhysicsCategory.Bunny
+                            tileNode.physicsBody?.categoryBitMask = PhysicsCategory.Ground
+                            
+                            // tileNode.yScale = tileMap.yScale
+                            // tileNode.xScale = tileMap.xScale
+                            
+                            
+                            tileMap.addChild(tileNode)
+                        }
+                    }
+                
+                }
+            }
         }
     }
 
     
-    func createDynamicGround() {
-        let screenWidth = frame.width
-        var currentX: CGFloat = frame.minX
-
-        while currentX < screenWidth {
-            let segmentWidth = CGFloat.random(in: 150...300)
-            let segmentHeight = CGFloat.random(in: 15...140)
-            let groundPositionY = frame.minY + segmentHeight
-
-            let ground = SKSpriteNode(imageNamed: "green")
-            ground.zPosition = 1
-            ground.position = CGPoint(x: currentX + segmentWidth, y: groundPositionY)
-            
-            print(ground.position, screenWidth)
-            ground.size = CGSize(width: segmentWidth, height: segmentHeight)
-            
-            ground.physicsBody = SKPhysicsBody(rectangleOf: ground.size)
-            ground.physicsBody?.isDynamic = false // The ground should not move due to physics
-            ground.physicsBody?.categoryBitMask = PhysicsCategory.Ground
-            ground.physicsBody?.contactTestBitMask = PhysicsCategory.Bunny
-            ground.physicsBody?.collisionBitMask = PhysicsCategory.Bunny
-            
-            addChild(ground)
-            
-            currentX += segmentWidth
-        }
-    }
-
     func setUpScene() {
         // Set up camera
         cameraNode = SKCameraNode()
         camera = cameraNode
         addChild(cameraNode)
         
-        currentGroundEnd = frame.minX
+        physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         
-        // Get label node from scene and store it for use later
-        let background = SKSpriteNode(color: UIColor(red: 1, green: 1, blue: 1, alpha: 1), size: frame.size)
-        background.zPosition = -1
-
+        
+        tileMapPhysics(tileMap: childNode(withName: "ground") as! SKTileMapNode)
+        
         let sunSize = 350.0
         let sunPadding = 50.0
         let sun = SKSpriteNode(imageNamed:"sun")
         sun.size = CGSize(width: sunSize, height: sunSize)
         sun.texture?.filteringMode = .nearest
         sun.position = CGPoint(x: -sunPadding, y: sunSize)
+        sun.zPosition = -1
         cameraNode.addChild(sun)
-
-        addChild(background)
         
         let spriteSheet = SKTexture(imageNamed: "bunny") // Replace with your sprite sheet's name
         
@@ -164,7 +130,7 @@ final class GameScene: SKScene {
         bunny.position = CGPoint(x: frame.minX + bunny.size.width, y: frame.maxY)
         bunny.xScale = -1
         
-        bunny.physicsBody = SKPhysicsBody(circleOfRadius: bunny.size.width / 2)
+        bunny.physicsBody = SKPhysicsBody(circleOfRadius: bunny.size.width / 3)
         bunny.physicsBody?.isDynamic = true
         bunny.physicsBody?.categoryBitMask = PhysicsCategory.Bunny
         bunny.physicsBody?.contactTestBitMask = PhysicsCategory.Ground
@@ -177,16 +143,13 @@ final class GameScene: SKScene {
         let repeatRunAction = SKAction.repeatForever(runAction)
         
         bunny.run(repeatRunAction)
-
-
-        createInitialCustomGround()
     }
     
     override func didMove(to view: SKView) {
         physicsWorld.gravity = CGVector(dx: 0, dy: -9.8)  // Set gravity to simulate a real-world environment
         physicsWorld.contactDelegate = self
         
-        self.backgroundColor = UIColor(white: 1, alpha: 1)
+        // self.backgroundColor = UIColor(white: 1, alpha: 1)
 
         self.setUpScene()
     }
@@ -204,7 +167,7 @@ final class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        cameraNode.position = CGPoint(x: bunny.position.x, y: frame.midY) // adjust camera position
+        cameraNode.position = CGPoint(x: bunny.position.x + bunny.size.width / 2, y: frame.midY) // adjust camera position
         
         if let camera = self.camera {
             let leftBoundary = camera.position.x - (size.width / 2)
@@ -222,12 +185,6 @@ final class GameScene: SKScene {
         }
         
         bunny.zRotation = 0
-        
-        if bunny.position.x + frame.width / 2 > currentGroundEnd - 150 {
-            let newGroundSegment = createCustomGroundSegment(at: currentGroundEnd)
-            addChild(newGroundSegment)
-        }
-
     }
 }
 
