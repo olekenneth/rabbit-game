@@ -55,6 +55,9 @@
 		B085D4C02CAAA3C6009F3D14 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		B085D4C32CAAA3C6009F3D14 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B085D4C52CAAA3C6009F3D14 /* Rabbit_macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Rabbit_macOS.entitlements; sourceTree = "<group>"; };
+		B08746552CBC24D00059F8E6 /* Rabbit-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Rabbit-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
+		B08746562CBC24DB0059F8E6 /* Rabbit-tvOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Rabbit-tvOS-Info.plist"; sourceTree = SOURCE_ROOT; };
+		B08746572CBC24E40059F8E6 /* Rabbit-macOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Rabbit-macOS-Info.plist"; sourceTree = SOURCE_ROOT; };
 		B0A16D5C2CBBABDB0007709D /* GroundTile.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GroundTile.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,6 +122,7 @@
 		B085D49D2CAAA3C6009F3D14 /* Rabbit iOS */ = {
 			isa = PBXGroup;
 			children = (
+				B08746552CBC24D00059F8E6 /* Rabbit-iOS-Info.plist */,
 				B085D49E2CAAA3C6009F3D14 /* AppDelegate.swift */,
 				B085D4A02CAAA3C6009F3D14 /* GameViewController.swift */,
 				B085D4A22CAAA3C6009F3D14 /* Main.storyboard */,
@@ -130,6 +134,7 @@
 		B085D4AD2CAAA3C6009F3D14 /* Rabbit tvOS */ = {
 			isa = PBXGroup;
 			children = (
+				B08746562CBC24DB0059F8E6 /* Rabbit-tvOS-Info.plist */,
 				B085D4AE2CAAA3C6009F3D14 /* AppDelegate.swift */,
 				B085D4B02CAAA3C6009F3D14 /* GameViewController.swift */,
 				B085D4B22CAAA3C6009F3D14 /* Main.storyboard */,
@@ -141,6 +146,7 @@
 		B085D4BD2CAAA3C6009F3D14 /* Rabbit macOS */ = {
 			isa = PBXGroup;
 			children = (
+				B08746572CBC24E40059F8E6 /* Rabbit-macOS-Info.plist */,
 				B085D4BE2CAAA3C6009F3D14 /* AppDelegate.swift */,
 				B085D4C02CAAA3C6009F3D14 /* GameViewController.swift */,
 				B085D4C22CAAA3C6009F3D14 /* Main.storyboard */,
@@ -485,6 +491,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XQ85U6R33U;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Rabbit-iOS-Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -515,6 +522,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XQ85U6R33U;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Rabbit-iOS-Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -546,6 +554,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XQ85U6R33U;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Rabbit-tvOS-Info.plist";
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
@@ -573,6 +582,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XQ85U6R33U;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Rabbit-tvOS-Info.plist";
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
@@ -604,6 +614,7 @@
 				DEVELOPMENT_TEAM = XQ85U6R33U;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Rabbit-macOS-Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -633,6 +644,7 @@
 				DEVELOPMENT_TEAM = XQ85U6R33U;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Rabbit-macOS-Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
