@@ -13,11 +13,10 @@ struct PhysicsCategory {
     static let None: UInt32 = 0
     static let Ground: UInt32 = 0b1       // Binary: 1
     static let Bunny: UInt32 = 0b10       // Binary: 2
+    static let Carrot: UInt32 = 0b11      // Binary: 3
 }
 
 final class GameScene: SKScene {
-    fileprivate var background : SKSpriteNode?
-    fileprivate var hero : SKShapeNode?
     fileprivate var bunny: SKSpriteNode!
     private var cameraNode: SKCameraNode!
     private var level = 1
@@ -107,7 +106,6 @@ final class GameScene: SKScene {
         
         let spriteSheet = SKTexture(imageNamed: "bunny") // Replace with your sprite sheet's name
         
-        // Assume sprite sheet is organized in 3 rows of 6 frames each
         let rows = 1
         let columns = 4
         let totalFrames = rows * columns  // Total number of frames on the sheet
@@ -143,8 +141,10 @@ final class GameScene: SKScene {
         bunny.physicsBody = SKPhysicsBody(circleOfRadius: bunny.size.width / 3)
         bunny.physicsBody?.isDynamic = true
         bunny.physicsBody?.categoryBitMask = PhysicsCategory.Bunny
-        bunny.physicsBody?.contactTestBitMask = PhysicsCategory.Ground
+        bunny.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Carrot
         bunny.physicsBody?.collisionBitMask = PhysicsCategory.Ground
+        
+        print(PhysicsCategory.Carrot)
         
         addChild(bunny)
         
@@ -166,7 +166,7 @@ final class GameScene: SKScene {
     
     func makeBunnyJump() {
         let bunnySpeed: CGFloat = 400.0
-        bunny.physicsBody?.velocity = CGVector(dx: 300, dy: bunnySpeed)
+        bunny.physicsBody?.velocity = CGVector(dx: bunny.physicsBody?.velocity.dx ?? 300, dy: bunnySpeed)
     }
     
     func resetBunnyPosition() {
@@ -215,6 +215,10 @@ extension GameScene: SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         // Handle contact between physics bodies
         // Example: Check which bodies made contact and handle collision
+        if contact.bodyA.categoryBitMask == PhysicsCategory.Carrot {
+            bunny.physicsBody?.velocity = .init(dx: 800, dy: 0)
+            contact.bodyA.node?.removeFromParent()
+        }
     }
 }
 
