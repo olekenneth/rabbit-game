@@ -22,8 +22,8 @@ final class GameScene: SKScene {
     private var cameraNode: SKCameraNode!
     private var level = 1
     private var currentTileMap: SKTileMapNode?
-
-        
+    
+    
     class func newGameScene() -> GameScene {
         // Load 'GameScene.sks' as an SKScene.
         guard let scene = SKScene(fileNamed: "GameScene") as? GameScene else {
@@ -36,52 +36,52 @@ final class GameScene: SKScene {
         
         return scene
     }
-
-    func tileMapPhysics(tileMap: SKTileMapNode)
-    {
-        let tileSize = CGSize(width: tileMap.tileSize.width, height: tileMap.tileSize.height)
-        for col in 0..<tileMap.numberOfColumns {
+    
+    var tilesFrom = 0
+    var tilesUntil = 0
+    var cameraX = -1000000.0
+    func tileMapPhysics(tileMap: SKTileMapNode, cameraX: CGFloat) {
+        let tileSize = tileMap.tileSize
+        tilesUntil = Int(cameraX / (tileSize.width * tileMap.xScale)) + 25
+        
+        for col in tilesFrom..<min(tileMap.numberOfColumns, tilesUntil) {
             for row in 0..<tileMap.numberOfRows {
-                if let tileDefinition = tileMap.tileDefinition(atColumn: col, row: row)
-                {
-                    guard let textureName = tileDefinition.name else { break }
-                    if textureName.localizedCaseInsensitiveContains("center") {
-                        if let tileTexture = tileDefinition.textures.first {
-                            let centerOfTile = tileMap.centerOfTile(atColumn: col, row: row)
-                            
-                            let tileNode = SKNode()
-                            
-                            tileNode.position = centerOfTile
-                            tileNode.physicsBody = SKPhysicsBody(texture: tileTexture,
-                                                                 size: tileSize)
-                            tileNode.physicsBody?.linearDamping = 60.0
-                            tileNode.physicsBody?.friction = 0.8
-                            tileNode.physicsBody?.affectedByGravity = false
-                            tileNode.physicsBody?.allowsRotation = false
-                            tileNode.physicsBody?.restitution = 0.0
-                            tileNode.physicsBody?.isDynamic = false
-                            tileNode.physicsBody?.collisionBitMask = PhysicsCategory.Bunny
-                            tileNode.physicsBody?.categoryBitMask = PhysicsCategory.Ground
-                            
-                            
-                            tileMap.addChild(tileNode)
-                        }
+                if let tileDefinition = tileMap.tileDefinition(atColumn: col, row: row) {
+                    if let textureName = tileDefinition.name, textureName.localizedCaseInsensitiveContains("center") {
+                        let centerOfTile = tileMap.centerOfTile(atColumn: col, row: row)
+                        let tileNode = SKNode()
+                        
+                        tileNode.position = centerOfTile
+//                        tileNode.size = tileSize
+//                        tileNode.color = .blue
+                        tileNode.physicsBody = SKPhysicsBody(rectangleOf: tileSize)
+                        tileNode.physicsBody?.linearDamping = 60.0
+                        tileNode.physicsBody?.friction = 0.8
+                        tileNode.physicsBody?.affectedByGravity = false
+                        tileNode.physicsBody?.allowsRotation = false
+                        tileNode.physicsBody?.restitution = 0.0
+                        tileNode.physicsBody?.isDynamic = false
+                        tileNode.physicsBody?.collisionBitMask = PhysicsCategory.Bunny
+                        tileNode.physicsBody?.categoryBitMask = PhysicsCategory.Ground
+                        tileMap.addChild(tileNode)
                     }
-                
                 }
             }
         }
+        tilesFrom = tilesUntil
     }
-
+    
     func loadLevel() {
         if let currentTileMap {
             currentTileMap.position.y = 5000
             currentTileMap.removeAllChildren()
         }
+        tilesFrom = 0
+        tilesUntil = 0
+
         let tileMap = childNode(withName: "level" + String(level)) as! SKTileMapNode
-        print(tileMap)
         currentTileMap = tileMap
-        tileMapPhysics(tileMap: tileMap)
+        // tileMapPhysics(tileMap: tileMap)
         
         tileMap.position.y = 0
     }
@@ -149,7 +149,7 @@ final class GameScene: SKScene {
         addChild(bunny)
         
         // Create the animation action
-        let runAction = SKAction.animate(with: bunnyTextures, timePerFrame: 0.1)
+        let runAction = SKAction.animate(with: bunnyTextures, timePerFrame: 0.09)
         let repeatRunAction = SKAction.repeatForever(runAction)
         
         bunny.run(repeatRunAction)
@@ -160,20 +160,20 @@ final class GameScene: SKScene {
         physicsWorld.contactDelegate = self
         
         // self.backgroundColor = UIColor(white: 1, alpha: 1)
-
+        
         self.setUpScene()
     }
     
     func makeBunnyJump() {
         let bunnySpeed: CGFloat = 400.0
-        bunny.physicsBody?.velocity = CGVector(dx: 200, dy: bunnySpeed)
+        bunny.physicsBody?.velocity = CGVector(dx: 300, dy: bunnySpeed)
     }
-
+    
     func resetBunnyPosition() {
         // Define the initial position of the bunny
         bunny.position = CGPoint(x: frame.minX + 100, y: frame.midY) // Adjust position as needed
         bunny.physicsBody?.velocity = CGVector(dx: 0, dy: 0) // Reset any movement
-        
+        cameraX = 0.0
         level += 1
         
         if level > 3 {
@@ -181,7 +181,7 @@ final class GameScene: SKScene {
         }
         loadLevel()
     }
-    
+        
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         cameraNode.position = CGPoint(x: bunny.position.x + bunny.size.width / 2, y: frame.midY) // adjust camera position
@@ -193,15 +193,21 @@ final class GameScene: SKScene {
             let topBoundary = camera.position.y + (size.height / 2)
             
             if bunny.position.x < leftBoundary ||
-               bunny.position.x > rightBoundary ||
-               bunny.position.y < bottomBoundary ||
-               bunny.position.y > topBoundary {
+                bunny.position.x > rightBoundary ||
+                bunny.position.y < bottomBoundary ||
+                bunny.position.y > topBoundary {
                 
                 resetBunnyPosition()
             }
         }
         
         bunny.zRotation = 0
+        
+        // print(cameraNode.frame.offsetBy(dx: frame.width / 2, dy: 0), view?.bounds, view?.bounds.minX, view?.bounds.midX, view?.bounds.maxX)
+        if cameraNode.frame.offsetBy(dx: (frame.width / 2), dy: 0).maxX - cameraX > 1200 {
+            cameraX = cameraNode.frame.offsetBy(dx: (frame.width / 2), dy: 0).maxX
+            tileMapPhysics(tileMap: currentTileMap!, cameraX: cameraX)
+        }
     }
 }
 
