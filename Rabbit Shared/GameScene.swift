@@ -55,7 +55,7 @@ final class GameScene: SKScene {
 //                        tileNode.color = .blue
                         tileNode.physicsBody = SKPhysicsBody(rectangleOf: tileSize)
                         tileNode.physicsBody?.linearDamping = 60.0
-                        tileNode.physicsBody?.friction = 0.8
+                        // tileNode.physicsBody?.friction = 0.8
                         tileNode.physicsBody?.affectedByGravity = false
                         tileNode.physicsBody?.allowsRotation = false
                         tileNode.physicsBody?.restitution = 0.0
@@ -140,6 +140,7 @@ final class GameScene: SKScene {
         
         bunny.physicsBody = SKPhysicsBody(circleOfRadius: bunny.size.width / 3)
         bunny.physicsBody?.isDynamic = true
+        bunny.physicsBody?.allowsRotation = false
         bunny.physicsBody?.categoryBitMask = PhysicsCategory.Bunny
         bunny.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Carrot
         bunny.physicsBody?.collisionBitMask = PhysicsCategory.Ground
@@ -165,8 +166,10 @@ final class GameScene: SKScene {
     }
     
     func makeBunnyJump() {
-        let bunnySpeed: CGFloat = 400.0
-        bunny.physicsBody?.velocity = CGVector(dx: bunny.physicsBody?.velocity.dx ?? 300, dy: bunnySpeed)
+        let upwardSpeed: CGFloat = 400.0
+        let forwardSpeed = bunny.physicsBody?.velocity.dx ?? 300
+        bunny.physicsBody?.velocity = CGVector(dx: 300, dy: upwardSpeed)
+        bunny.physicsBody?.mass = 4.0
     }
     
     func resetBunnyPosition() {
@@ -228,10 +231,6 @@ extension GameScene: SKPhysicsContactDelegate {
 extension GameScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let background = self.background {
-            background.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
-        
         for touch in touches {
             let location = touch.location(in: self)
             
