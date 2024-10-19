@@ -242,7 +242,7 @@ extension GameScene {
             
             if location.x > frame.midX {
             }
-            makeBunnyJump()
+            // makeBunnyJump()
         }
     }
     
