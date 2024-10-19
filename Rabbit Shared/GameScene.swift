@@ -169,7 +169,6 @@ final class GameScene: SKScene {
         let upwardSpeed: CGFloat = 400.0
         let forwardSpeed = bunny.physicsBody?.velocity.dx ?? 300
         bunny.physicsBody?.velocity = CGVector(dx: 300, dy: upwardSpeed)
-        bunny.physicsBody?.mass = 4.0
     }
     
     func resetBunnyPosition() {
