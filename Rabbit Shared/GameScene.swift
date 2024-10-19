@@ -55,7 +55,7 @@ final class GameScene: SKScene {
 //                        tileNode.color = .blue
                         tileNode.physicsBody = SKPhysicsBody(rectangleOf: tileSize)
                         tileNode.physicsBody?.linearDamping = 60.0
-                        // tileNode.physicsBody?.friction = 0.8
+                        tileNode.physicsBody?.friction = 0.8
                         tileNode.physicsBody?.affectedByGravity = false
                         tileNode.physicsBody?.allowsRotation = false
                         tileNode.physicsBody?.restitution = 0.0
@@ -142,7 +142,7 @@ final class GameScene: SKScene {
         bunny.physicsBody?.isDynamic = true
         bunny.physicsBody?.allowsRotation = false
         bunny.physicsBody?.categoryBitMask = PhysicsCategory.Bunny
-        bunny.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Carrot
+        bunny.physicsBody?.contactTestBitMask = PhysicsCategory.Carrot
         bunny.physicsBody?.collisionBitMask = PhysicsCategory.Ground
         
         print(PhysicsCategory.Carrot)
@@ -203,9 +203,6 @@ final class GameScene: SKScene {
             }
         }
         
-        bunny.zRotation = 0
-        
-        // print(cameraNode.frame.offsetBy(dx: frame.width / 2, dy: 0), view?.bounds, view?.bounds.minX, view?.bounds.midX, view?.bounds.maxX)
         if cameraNode.frame.offsetBy(dx: (frame.width / 2), dy: 0).maxX - cameraX > 1200 {
             cameraX = cameraNode.frame.offsetBy(dx: (frame.width / 2), dy: 0).maxX
             tileMapPhysics(tileMap: currentTileMap!, cameraX: cameraX)
