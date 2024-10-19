@@ -140,7 +140,8 @@ final class GameScene: SKScene {
         
         bunny.physicsBody = SKPhysicsBody(circleOfRadius: bunny.size.width / 3)
         bunny.physicsBody?.isDynamic = true
-        bunny.physicsBody?.allowsRotation = false
+        // bunny.physicsBody?.allowsRotation = false
+        bunny.physicsBody?.restitution = 0.3
         bunny.physicsBody?.categoryBitMask = PhysicsCategory.Bunny
         bunny.physicsBody?.contactTestBitMask = PhysicsCategory.Carrot
         bunny.physicsBody?.collisionBitMask = PhysicsCategory.Ground
@@ -166,9 +167,7 @@ final class GameScene: SKScene {
     }
     
     func makeBunnyJump() {
-        let upwardSpeed: CGFloat = 400.0
-        let forwardSpeed = bunny.physicsBody?.velocity.dx ?? 300
-        bunny.physicsBody?.velocity = CGVector(dx: 300, dy: upwardSpeed)
+        bunny.physicsBody?.applyImpulse(.init(dx: 300, dy: 300))
     }
     
     func resetBunnyPosition() {
@@ -178,7 +177,7 @@ final class GameScene: SKScene {
         cameraX = 0.0
         level += 1
         
-        if level > 3 {
+        if level > 5 {
             level = 1
         }
         loadLevel()
@@ -186,6 +185,7 @@ final class GameScene: SKScene {
         
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+        bunny.zRotation = 0
         cameraNode.position = CGPoint(x: bunny.position.x + bunny.size.width / 2, y: frame.midY) // adjust camera position
         
         if let camera = self.camera {
@@ -215,7 +215,7 @@ extension GameScene: SKPhysicsContactDelegate {
         // Handle contact between physics bodies
         // Example: Check which bodies made contact and handle collision
         if contact.bodyA.categoryBitMask == PhysicsCategory.Carrot {
-            bunny.physicsBody?.velocity = .init(dx: 800, dy: 0)
+            bunny.physicsBody?.applyImpulse(.init(dx: 800, dy: 0))
             contact.bodyA.node?.removeFromParent()
         }
     }
@@ -252,7 +252,7 @@ extension GameScene {
             
             if location.x > frame.midX {
             }
-            makeBunnyJump()
+            // makeBunnyJump()
         }
     }
     
