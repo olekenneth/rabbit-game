@@ -90,6 +90,7 @@ final class GameScene: SKScene {
         cameraNode = SKCameraNode()
         camera = cameraNode
         addChild(cameraNode)
+    
         
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         
@@ -177,7 +178,7 @@ final class GameScene: SKScene {
         cameraX = 0.0
         level += 1
         
-        if level > 5 {
+        if level > 7 {
             level = 1
         }
         loadLevel()
@@ -267,6 +268,29 @@ extension GameScene {
 #if os(OSX)
 // Mouse-based event handling
 extension GameScene {
+    
+    override func keyDown(with event: NSEvent) {
+        interpretKeyEvents([event])
+        
+        super.keyDown(with: event)
+    }
+    
+    override func keyUp(with event: NSEvent) {
+        event.characters?.forEach { key in
+            print("pressing \(key)")
+            if key == " " {
+                self.makeBunnyJump()
+            }
+            
+            if key.isNumber {
+                print("IsNumber", key.wholeNumberValue!)
+                level = key.wholeNumberValue!
+                resetBunnyPosition()
+                
+            }
+        }
+        super.keyUp(with: event)
+    }
 
     override func mouseDown(with event: NSEvent) {
         self.makeBunnyJump()
